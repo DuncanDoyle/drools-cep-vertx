@@ -1,0 +1,11 @@
+package org.drools.vertx.demo.cep.rules;
+
+import java.lang.String;
+
+
+rule "Test"
+when
+	$s: String()
+then
+	System.out.println("Found String: " + $s);
+end
