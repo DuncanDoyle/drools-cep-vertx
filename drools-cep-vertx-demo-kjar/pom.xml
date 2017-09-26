@@ -12,6 +12,14 @@
 	</properties>
 	<dependencies>
 		
+		<!-- Project domain model. -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>drools-cep-vertx-demo-model</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		
 		<!-- Drools -->
 		<dependency>
 			<groupId>org.kie</groupId>
