@@ -13,12 +13,23 @@
 		 -->
 	</properties>
 	<dependencies>
+	
+		<!--  Project domain model -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>drools-cep-vertx-demo-model</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+	
+		<!--  Vert.X -->
 		<dependency>
 			<groupId>io.vertx</groupId>
 			<artifactId>vertx-core</artifactId>
 			<version>${version.io.vertx}</version>
 			<scope>compile</scope>
 		</dependency>
+		
 		<!-- Drools -->
 		<dependency>
 			<groupId>org.drools</groupId>
@@ -97,7 +108,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.4.0</version>
+				<version>1.6.0</version>
 				<executions>
 					<execution>
 						<id>run</id>
@@ -112,7 +123,6 @@
 							</arguments>
 						</configuration>
 					</execution>
-
 					<execution>
 						<id>run-app</id>
 						<goals>
@@ -120,7 +130,7 @@
 						</goals>
 						<configuration>
 							<executable>java</executable>
-							<arguments>
+          					<arguments>
 								<argument>-jar</argument>
 								<argument>target/${project.artifactId}-${project.version}-fat.jar</argument>
 							</arguments>
