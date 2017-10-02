@@ -1,0 +1,19 @@
+package org.drools.vertx.demo.cep.rules;
+
+import org.drools.vertx.demo.cep.model.SimpleEvent;
+import java.io.Serializable;
+import org.drools.vertx.demo.cep.command.Command;
+
+global org.drools.vertx.demo.cep.command.CommandFactory commandFactory;
+
+
+rule "Simple"
+when
+	$s: SimpleEvent()
+then
+	System.out.println("Found SimpleEvent: " + $s);
+	//channels["VertxChannel"].send(commandFactory.getSystemOutCommand("Baggage lost at sorting. BagTag ID: " + $b1.getBagTag().getId(), drools));
+	channels["VertxChannel"].send(commandFactory.buildCommand((Command & Serializable)() -> {
+		System.out.println("My cool command!!!");
+	}));
+end

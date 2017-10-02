@@ -1,7 +1,10 @@
 package org.drools.vertx;
 
+import org.drools.vertx.demo.cep.command.Command;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.eventbus.Message;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
@@ -17,10 +20,18 @@ public class DroolsCepChannelHandlerVerticle extends AbstractVerticle {
 	@Override
 	public void start(Future<Void> startFuture) throws Exception {
 		LOGGER.info("Drools CEP ChannelHandler Verticle started.");
+		
+		vertx.eventBus().consumer(Constants.DROOLS_CHANNEL_EVENT_BUS_ADDRESS, message -> {
+			handleCommand(message);
+		});
+		
 		startFuture.complete();
 	}
-
 	
-	
+	private void handleCommand(Message message) {
+		LOGGER.info("Executing command!");
+		Command command = (Command) message.body();
+		command.execute();
+	}
 	
 }

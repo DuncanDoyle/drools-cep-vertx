@@ -9,18 +9,18 @@ package org.drools.vertx.demo.cep.model;
  */
 public class LuggageScanEvent implements Event {
 
-	private final long id;
+	private final String id;
 	private final long timestampMillis;
 	
 	
-	public LuggageScanEvent(final long id, final long timestampMillis) {
+	public LuggageScanEvent(final String id, final long timestampMillis) {
 		this.id = id;
 		this.timestampMillis = timestampMillis;
 	}
 	
 	
 	@Override
-	public long getId() {
+	public String getId() {
 		return id;
 	}
 

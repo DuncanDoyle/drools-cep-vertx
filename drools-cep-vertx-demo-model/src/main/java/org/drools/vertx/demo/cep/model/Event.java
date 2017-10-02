@@ -8,7 +8,7 @@ package org.drools.vertx.demo.cep.model;
  */
 public interface Event {
 	
-	long getId();
+	String getId();
 	
 	long getTimestampMillis();
 
