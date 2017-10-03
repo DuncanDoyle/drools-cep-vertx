@@ -16,7 +16,6 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
-import io.vertx.core.eventbus.MessageCodec;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -112,14 +111,34 @@ public class DroolsCepEngineVerticle extends AbstractVerticle {
 				cepChannelHandlerVerticleStartFuture.fail(res.cause());
 			}
 		});
-
+		
+		Future<Void> kafkaEventStoreVerticleStartFuture = Future.future();
+		vertx.deployVerticle("org.drools.vertx.DroolsCepKafkaEventStoreVerticle", deploymentOptions, res -> {
+			if (res.succeeded()) {
+				kafkaEventStoreVerticleStartFuture.complete();
+			} else {
+				kafkaEventStoreVerticleStartFuture.fail(res.cause());
+			}
+		});
+		
+		
+		Future<Void> mongoEventStoreVerticleStartFuture = Future.future();
+		vertx.deployVerticle("org.drools.vertx.DroolsCepMongoEventStoreVerticle", deploymentOptions, res -> {
+			if (res.succeeded()) {
+				mongoEventStoreVerticleStartFuture.complete();
+			} else {
+				mongoEventStoreVerticleStartFuture.fail(res.cause());
+			}
+		});
+		
+		
 		/*
 		 * ################################################################################################################################
 		 * # CompositeFuture that completes this startup when all the other Future's complete.
 		 * ################################################################################################################################
 		 */
 		// Join the futures to mark startFuture as complete.
-		CompositeFuture.all(droolsKieSessionStartFuture, cepChannelHandlerVerticleStartFuture, httpInputVerticleStartFuture)
+		CompositeFuture.all(droolsKieSessionStartFuture, cepChannelHandlerVerticleStartFuture, httpInputVerticleStartFuture, kafkaEventStoreVerticleStartFuture, mongoEventStoreVerticleStartFuture)
 				.setHandler(ar -> {
 					if (ar.succeeded()) {
 						startFuture.complete();

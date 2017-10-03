@@ -1,21 +1,10 @@
 package org.drools.vertx;
 
-import java.util.UUID;
-
-import org.drools.vertx.demo.cep.model.Event;
-import org.drools.vertx.demo.cep.model.SimpleEvent;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpServer;
-import io.vertx.core.json.Json;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
 
 public class DroolsCepHttpVerticle extends AbstractVerticle {
 

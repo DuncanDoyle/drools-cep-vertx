@@ -9,7 +9,7 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
 /**
- * Implemens a simple Drools Channel that handles RHS actions. 
+ * Implements a simple Drools Channel that handles RHS actions. 
  * 
  * @author <a href="mailto:duncan.doyle@redhat.com">Duncan Doyle</a>
  */

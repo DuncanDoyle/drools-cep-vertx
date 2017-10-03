@@ -15,6 +15,7 @@
 		<main.verticle>org.drools.vertx.DroolsCepEngineVerticle</main.verticle>
 		<version.io.vertx>3.4.2</version.io.vertx>
 		<version.org.kie>8.0.0-SNAPSHOT</version.org.kie>
+		<version.org.apache.kafka>0.11.0.1</version.org.apache.kafka>
 		<!-- 
 		<version.org.slf4j>1.7.16</version.org.slf4j>
 		 -->
@@ -41,6 +42,16 @@
 			<artifactId>vertx-web</artifactId>
 			<version>${version.io.vertx}</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-mongo-client</artifactId>
+			<version>${version.io.vertx}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-kafka-client</artifactId>
+			<version>${version.io.vertx}</version>
 		</dependency>
 		
 		<!-- Drools -->
@@ -74,7 +85,17 @@
 			<version>${version.org.kie}</version>
 			<scope>compile</scope>
 		</dependency>
+		
+		<!--  -->
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>${version.org.apache.kafka}</version>
+			<scope>compile</scope>
+		</dependency>
+		
 		<!-- This is a transitive dependency of KIE-CI, but vertx:run complains with a ClassNotFound without this dependency. -->
+		<!-- 
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
@@ -83,6 +104,7 @@
 			<version>4.0</version>
 			<classifier>no_aop</classifier>
 		</dependency>
+		 -->
 		
 		<!-- 
 		<dependency>
