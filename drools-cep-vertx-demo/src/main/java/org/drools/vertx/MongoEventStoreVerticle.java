@@ -17,9 +17,9 @@ import io.vertx.ext.mongo.MongoClient;
  * 
  * @author <a href="mailto:duncan.doyle@redhat.com">Duncan Doyle</a>
  */
-public class DroolsCepMongoEventStoreVerticle extends AbstractVerticle {
+public class MongoEventStoreVerticle extends AbstractVerticle {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DroolsCepMongoEventStoreVerticle.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongoEventStoreVerticle.class);
 	
 	private static final int GET_EVENT_FAILURE_CODE = 1;
 	
@@ -31,13 +31,13 @@ public class DroolsCepMongoEventStoreVerticle extends AbstractVerticle {
 		mongoClient = MongoClient.createShared(vertx, getMongoConfig());
 		
 		// Register for Events on the EventBus.
-		vertx.eventBus().<String> consumer(Constants.SIMPLE_EVENT_EVENT_BUS_ADDRESS, message -> {
+		vertx.eventBus().<String> consumer(Constants.EVENT_STORE_EVENT_BUS_ADDRESS, message -> {
 			storeEvent(message, result -> {
 				if (result.succeeded()) {
 					LOGGER.info("Event succesfully stored in MongoDB with id: " + result.result());
 				} else {
 					//LOG an error. TODO: Maybe we should provide some retry logic ...???
-					LOGGER.info("Error storing event in MongoDB.");
+					LOGGER.error("Error storing event in MongoDB.");
 				}
 				
 			});

@@ -1,0 +1,44 @@
+FlightInfo
+
+{
+   "flightCode" : "KL1001",
+   "codeShares" : [ ],
+   "flightDate" : [ 2018, 7, 6 ],
+   "scheduledDepartureTime" : [ 7, 15 ],
+   "departureLocation" : "AMS",
+   "arrivalLocation" : "LHR",
+   "aircraftRegistrationNumber" : "PH-PBA",
+   "bookings" : [ ]
+ }
+ 
+ 
+ 
+ CrewArrivedEvent
+ 
+ {
+   "id" : "e4e5ecdc-83ca-4ad4-89bf-2759b8443cb1",
+   "timestampMillis" : 1531050425217,
+   "flightCode" : "KL1001",
+   "flightDate" : {
+     "year" : 2018,
+     "month" : "JULY",
+     "monthValue" : 7,
+     "dayOfMonth" : 6,
+     "dayOfWeek" : "FRIDAY",
+     "era" : "CE",
+     "dayOfYear" : 187,
+     "leapYear" : false,
+     "chronology" : {
+       "id" : "ISO",
+       "calendarType" : "iso8601"
+     }
+   }
+ }
+ 
+ 
+ SimpleEvent
+  {
+	"id" : "7d782f84-be1f-4844-a4e7-c436e3945590",
+	"timestampMillis" : 1530893957073
+   }
+ 

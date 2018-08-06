@@ -1,0 +1,11 @@
+Create a partition per plane/flight code
+
+Events
+- Checked-in passengers: have all passengers checked-in 1 hour before departure
+- When the crew arrives, check that departure time is still exact
+- If the crew has not arrived 30 minutes before departure, change boarding time
+- If bags have not been scanned at sorting 30 minutes before departure, raise alarm
+etc.
+
+
+

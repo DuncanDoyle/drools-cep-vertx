@@ -1,14 +1,16 @@
 package org.drools.vertx;
 
+import org.drools.vertx.http.HttpRouterBuilder;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
-public class DroolsCepHttpVerticle extends AbstractVerticle {
+public class HttpVerticle extends AbstractVerticle {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DroolsCepHttpVerticle.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(HttpVerticle.class);
 	
 	@Override
 	public void start(Future<Void> startFuture) throws Exception {
@@ -23,7 +25,7 @@ public class DroolsCepHttpVerticle extends AbstractVerticle {
 		Future<Void> startHttpServerFuture = Future.future();
 		HttpServer httpServer = vertx.createHttpServer();
 
-		httpServer.requestHandler(new DroolsHttpRouterBuilder(vertx).buildRouter()::accept);
+		httpServer.requestHandler(new HttpRouterBuilder(vertx).buildRouter()::accept);
 		httpServer.listen(8080, res -> {
 			if (res.succeeded()) {
 				LOGGER.info("Started HTTP Server. Listening on port: " + httpServer.actualPort());

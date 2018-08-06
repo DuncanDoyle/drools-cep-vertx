@@ -1,0 +1,5 @@
+{
+  "kjar.groupId" : "org.drools.demo",
+  "kjar.artifactId": "drools-cep-vertx-demo-kjar",
+  "kjar.version": "0.0.1-SNAPSHOT"
+}

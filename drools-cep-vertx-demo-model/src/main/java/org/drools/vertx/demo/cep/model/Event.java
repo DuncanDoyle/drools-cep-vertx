@@ -12,4 +12,6 @@ public interface Event {
 	
 	long getTimestampMillis();
 
+	void accept(ModelVisitor visitor);
+	
 }

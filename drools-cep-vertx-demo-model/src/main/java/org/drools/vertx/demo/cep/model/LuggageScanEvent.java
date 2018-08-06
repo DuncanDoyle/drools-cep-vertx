@@ -1,5 +1,7 @@
 package org.drools.vertx.demo.cep.model;
 
+import java.time.LocalDate;
+
 /**
  * Represents a scan of luggage at airport.
  * <p/>
@@ -7,26 +9,10 @@ package org.drools.vertx.demo.cep.model;
  * 
  * @author <a href="mailto:duncan.doyle@redhat.com">Duncan Doyle</a>
  */
-public class LuggageScanEvent implements Event {
+public class LuggageScanEvent extends AbstractFlightEvent {
 
-	private final String id;
-	private final long timestampMillis;
-	
-	
-	public LuggageScanEvent(final String id, final long timestampMillis) {
-		this.id = id;
-		this.timestampMillis = timestampMillis;
+	public LuggageScanEvent(final String id, final long timestampMillis, final String flightCode, final LocalDate flightDate) {
+		super(id, timestampMillis, flightCode, flightDate);
 	}
-	
-	
-	@Override
-	public String getId() {
-		return id;
-	}
-
-	@Override
-	public long getTimestampMillis() {
-		return timestampMillis;
-	}
-
+		
 }

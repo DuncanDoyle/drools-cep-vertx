@@ -7,15 +7,16 @@
 	<properties>
 		<!-- Properties required by vertx-maven-plugin -->
 		<fabric8-vertx-maven-plugin.version>1.0.9</fabric8-vertx-maven-plugin.version>
-		<vertx.verticle>org.drools.vertx.DroolsCepEngineVerticle</vertx.verticle>
+		<vertx.verticle>org.drools.vertx.MainVerticle</vertx.verticle>
         <!-- also the default -->
 		<vertx.launcher>io.vertx.core.Launcher</vertx.launcher>
 		
 		<!-- Required for the exec plugin. -->
-		<main.verticle>org.drools.vertx.DroolsCepEngineVerticle</main.verticle>
-		<version.io.vertx>3.4.2</version.io.vertx>
-		<version.org.kie>8.0.0-SNAPSHOT</version.org.kie>
+		<main.verticle>org.drools.vertx.MainVerticle</main.verticle>
+		<version.io.vertx>3.5.2</version.io.vertx>
+		<version.org.kie>7.9.0.Final</version.org.kie>
 		<version.org.apache.kafka>0.11.0.1</version.org.apache.kafka>
+		<version.ch.qos.logback>1.2.3</version.ch.qos.logback>
 		<!-- 
 		<version.org.slf4j>1.7.16</version.org.slf4j>
 		 -->
@@ -29,6 +30,13 @@
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>drools-cep-vertx-demo-kjar</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		
 	
 		<!--  Vert.X -->
 		<dependency>
@@ -52,6 +60,17 @@
 			<groupId>io.vertx</groupId>
 			<artifactId>vertx-kafka-client</artifactId>
 			<version>${version.io.vertx}</version>
+			<!--  Is there any reason why the vert.x kafka client is bringing in this dependency? -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		
 		<!-- Drools -->
@@ -93,6 +112,24 @@
 			<version>${version.org.apache.kafka}</version>
 			<scope>compile</scope>
 		</dependency>
+		
+		
+		<!--  Jackson Mappers for date-time -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.9.5</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${version.ch.qos.logback}</version>
+			<scope>runtime</scope>
+		</dependency>
+		
+		
 		
 		<!-- This is a transitive dependency of KIE-CI, but vertx:run complains with a ClassNotFound without this dependency. -->
 		<!-- 
@@ -146,6 +183,9 @@
 								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 									<resource>META-INF/services/io.vertx.core.spi.VerticleFactory</resource>
 								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/kie.conf</resource>
+								</transformer>
 							</transformers>
 							<artifactSet>
 							</artifactSet>
@@ -189,9 +229,9 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>io.fabric8</groupId>
+				<groupId>io.reactiverse</groupId>
 				<artifactId>vertx-maven-plugin</artifactId>
-				<version>${fabric8-vertx-maven-plugin.version}</version>
+				<version>1.0.15</version>
 				<executions>
 					<execution>
 						<id>vmp</id>

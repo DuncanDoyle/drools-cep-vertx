@@ -17,9 +17,9 @@ import io.vertx.kafka.client.producer.RecordMetadata;
 
 
 //TODO: To re-process events in the correct order, events of related sessions should go into the same Kafka Partition.
-public class DroolsCepKafkaEventStoreVerticle extends AbstractVerticle {
+public class KafkaEventStoreVerticle extends AbstractVerticle {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DroolsCepKafkaEventStoreVerticle.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(KafkaEventStoreVerticle.class);
 	
 	private static final String KAFKA_CONSUMER_GROUP_ID = "drools-vertx-kafka-consumer";
 	
@@ -45,13 +45,11 @@ public class DroolsCepKafkaEventStoreVerticle extends AbstractVerticle {
 		producer = KafkaProducer.create(vertx, getKafkaProducerConfig());
 		
 		//Register for Events on the EventBus.
-		vertx.eventBus().<String> consumer(Constants.SIMPLE_EVENT_EVENT_BUS_ADDRESS, message -> {
+		vertx.eventBus().<String> consumer(Constants.EVENT_STORE_EVENT_BUS_ADDRESS, message -> {
 			handleEvent(message);
 		});
-		
 	}
 	
-
 	/**
 	 * Closes the Kafka producer and shuts down the verticle.
 	 */
@@ -68,7 +66,6 @@ public class DroolsCepKafkaEventStoreVerticle extends AbstractVerticle {
 				stopFuture.fail(res.cause());
 			}
 		});
-		
 	}
 
 	
