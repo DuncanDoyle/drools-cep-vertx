@@ -3,17 +3,20 @@ package org.drools.vertx;
 import java.util.concurrent.TimeUnit;
 
 import org.drools.core.time.SessionPseudoClock;
+import org.drools.vertx.channel.DroolsVertxChannel;
+import org.drools.vertx.demo.cep.command.CommandFactory;
 import org.drools.vertx.demo.cep.model.AbstractFlightEvent;
-import org.drools.vertx.demo.cep.model.CrewArrivedEvent;
+import org.drools.vertx.demo.cep.model.Flight;
 import org.drools.vertx.demo.cep.model.FlightInfoEvent;
-import org.drools.vertx.demo.cep.model.LuggageScanEvent;
+import org.drools.vertx.demo.model.mapper.FlightMapper;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
+
 
 /**
  * Verticle representing a flight. This verticle maintains a CEP session, and each flight has its own verticle deployed.
@@ -27,8 +30,10 @@ public class FlightVerticle extends AbstractVerticle {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FlightVerticle.class);
 
-	private FlightInfoEvent flightInfo;
-
+	private Flight flight;
+	
+	private FlightInfoEvent flightInfoEvent;
+	
 	private final KieContainer kieContainer;
 	
 	private final String flightId;
@@ -38,12 +43,13 @@ public class FlightVerticle extends AbstractVerticle {
 	/**
 	 * Allows us to create a verticle per flight.
 	 * 
-	 * @param flightInfo
+	 * @param flight
 	 * @param kieContainer
 	 * @param eventBusAddress
 	 */
-	public FlightVerticle(final FlightInfoEvent flightInfoEvent, final KieContainer kieContainer) {
-		this.flightInfo = flightInfo;
+	public FlightVerticle(FlightInfoEvent flightInfoEvent, final KieContainer kieContainer) {
+		this.flight = FlightMapper.toFlight(flightInfoEvent);
+		this.flightInfoEvent = flightInfoEvent;
 		this.flightId = Constants.getUniqueFlightId(flightInfoEvent);
 		LOGGER.info("Setting KieContainer to: " + kieContainer);
 		this.kieContainer = kieContainer;
@@ -61,10 +67,15 @@ public class FlightVerticle extends AbstractVerticle {
 			kieSession = kieContainer.newKieSession();
 			
 			// Register channels;
-			//kieSession.registerChannel(Constants.DROOLS_CHANNEL_NAME, new DroolsVertxChannel(vertx.eventBus()));
+			LOGGER.info("Registering Drools channels.");
+			kieSession.registerChannel(Constants.DROOLS_CHANNEL_NAME, new DroolsVertxChannel(vertx.eventBus()));
 
-			// Set globals
-			//kieSession.setGlobal("commandFactory", new CommandFactory());
+			// Set the CommandFactory as a global.
+			kieSession.setGlobal("commandFactory", new CommandFactory());
+			kieSession.setGlobal("flightInfo", this.flightInfoEvent);
+			
+			//Insert the FlightEvent of this Verticle
+			insertEventAndFireRules(flightInfoEvent);
 
 			future.complete();
 		}, false, res -> {
@@ -72,46 +83,54 @@ public class FlightVerticle extends AbstractVerticle {
 				LOGGER.info("Flight Verticle started succesfully for flight: " + flightId);
 				startFuture.complete();
 			} else {
+				LOGGER.error("Flight Verticle NOT started for flight: " + flightId);
 				startFuture.fail(res.cause());
 			}
 		});
 		
+		//------------- Register consumers on the EventBus -------------
 		//register handlers for all event-types that we're interested in.
 		//Note that the addresses we listen on need the same as the addresses resolved by EventBusAddressResolver.
 		//TODO Make the creation of the address a concern of a class that's also used by EventBusAddressResolver.
+		LOGGER.info("Register event consumers for flight: " + flight.getFlightCode());
 		vertx.eventBus().<FlightInfoEvent> consumer(Constants.FLIGHT_INFO_EVENT_BUS_ADDRESS_PREFIX + flightId, message -> {
 			handleFlightInfoEvent(message.body());
 		});
 		
-		//TODO: We might want to consider combining all these channels into a single on if handling of events is generic.
-		
-		//Luggage
-		vertx.eventBus().<LuggageScanEvent> consumer(Constants.LUGGAGE_SCAN_EVENT_EVENT_BUS_ADDRESS_PREFIX + flightId, message -> {
+		//All other flight events
+		vertx.eventBus().<AbstractFlightEvent> consumer(Constants.ABSTRACT_FLIGHT_EVENT_EVENT_BUS_ADDRESS_PREFIX + flightId, message -> {
 			handleAbstractFlightEvent(message.body());
 		});
-		
-		//Crew
-		vertx.eventBus().<CrewArrivedEvent> consumer(Constants.CREW_ARRIVED_EVENT_EVENT_BUS_ADDRESS_PREFIX + flightId, message -> {
-			handleAbstractFlightEvent(message.body());
-		});
-		
-		
+		LOGGER.info("Event consumers registered for flight: " + flight.getFlightCode());
 	}
+	
+	public Flight getFlight() {
+		//TODO: We should return an immutable object.
+		return flight;
+	}
+	
 	
 	
 	private void handleFlightInfoEvent(FlightInfoEvent event) {
 		LOGGER.info("Updating flight info.");
-		this.flightInfo = event;
+		this.flightInfoEvent = event;
+		//Also update our internal Flight state.
+		this.flight = FlightMapper.toFlight(event);
 		insertEventAndFireRules(event);
 	}
 	
 	private void handleAbstractFlightEvent(AbstractFlightEvent event) {
-		LOGGER.info("Sending AbstractFlighEvent to Drools session.");
-		
+		LOGGER.info("Sending AbstractFlighEvent to Drools session. Event is of type: " + event.getClass().getCanonicalName());		
+		insertEventAndFireRules(event);
 	}
 	
+	/**
+	 * Inserts events, advances the pseudo-clock (if required) and fires the rules.
+	 * 
+	 * @param event the event to be inserted.
+	 */
 	private void insertEventAndFireRules(AbstractFlightEvent event) {
-		LOGGER.debug("Inserting event into CEP session for Flight: " + flightId);
+		LOGGER.info("Inserting event into CEP session for Flight: " + flightId);
 		SessionPseudoClock clock = kieSession.getSessionClock();
 		long advanceDeltaTime = event.getTimestampMillis() - clock.getCurrentTime();
 		
@@ -132,8 +151,8 @@ public class FlightVerticle extends AbstractVerticle {
 				fireRuleFuture.fail(res.cause());
 			}
 		});
-		
 	}
+	
 	
 
 	@Override

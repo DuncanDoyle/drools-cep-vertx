@@ -12,24 +12,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 
-/**
- * JSON String { "id": "1234", "timestampMillis": 1533479595851, "flightCode": "KL-1001", "flightDate": [ 2018, 8, 5 ], "codeShares": [],
- * "scheduledDepartureTime": [ 16, 33, 15, 899000000 ], "departureLocation": "AMS", "arrivalLocation": "LHR", "aircraftRegistrationNumber":
- * "PH-PBA", "bookings": [] }
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * @author <a href="mailto:duncan.doyle@redhat.com">Duncan Doyle</a>
- *
- */
-
 public class FlightInfoEvent extends AbstractFlightEvent {
 
+	
 	private List<String> codeShares;
 
 	@JsonSerialize(using = LocalTimeSerializer.class)

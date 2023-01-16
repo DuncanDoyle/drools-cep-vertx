@@ -54,7 +54,6 @@ public class SimpleEvent implements Event {
 	@Override
 	public void accept(ModelVisitor visitor) {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	

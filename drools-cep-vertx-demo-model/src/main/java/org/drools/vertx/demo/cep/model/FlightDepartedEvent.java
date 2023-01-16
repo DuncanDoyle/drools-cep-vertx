@@ -2,13 +2,13 @@ package org.drools.vertx.demo.cep.model;
 
 public class FlightDepartedEvent extends SimpleEvent {
 	
-	private FlightInfoEvent flightInfo;
+	private Flight flightInfo;
 	
-	public FlightDepartedEvent(FlightInfoEvent flightInfo) {
+	public FlightDepartedEvent(Flight flightInfo) {
 		this.flightInfo = flightInfo;
 	}
 
-	public FlightInfoEvent getFlightInfo() {
+	public Flight getFlightInfo() {
 		return flightInfo;
 	}
 

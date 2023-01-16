@@ -1,19 +1,30 @@
 package org.drools.vertx.demo.cep.rules;
 
-import org.drools.vertx.demo.cep.model.SimpleEvent;
+import org.drools.vertx.demo.cep.model.FlightInfoEvent;
+import org.drools.vertx.demo.cep.model.LuggageScanEvent;
 import java.io.Serializable;
 import org.drools.vertx.demo.cep.command.Command;
 
 global org.drools.vertx.demo.cep.command.CommandFactory commandFactory;
+global org.drools.vertx.demo.cep.model.FlightInfoEvent flightInfo;
 
-
-rule "Simple"
+rule "Flight Info Update"
 when
-	$s: SimpleEvent()
+	$f: FlightInfoEvent()
 then
-	System.out.println("Found SimpleEvent: " + $s);
 	//channels["VertxChannel"].send(commandFactory.getSystemOutCommand("Baggage lost at sorting. BagTag ID: " + $b1.getBagTag().getId(), drools));
 	channels["VertxChannel"].send(commandFactory.buildCommand((Command & Serializable)() -> {
-		System.out.println("My cool command!!!");
+		System.out.println("Flight info update: " + $f.getFlightCode());
 	}));
 end
+
+rule "Luggage Scanned"
+when
+	$ls: LuggageScanEvent()
+then
+	channels["VertxChannel"].send(commandFactory.buildCommand((Command & Serializable)() -> {
+		System.out.println("Luggage scanned for flight: " + flightInfo.getFlightCode());
+	}));
+end
+
+

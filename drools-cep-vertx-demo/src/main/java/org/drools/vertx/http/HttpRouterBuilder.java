@@ -1,9 +1,9 @@
 package org.drools.vertx.http;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.UUID;
 
+import org.apache.http.HttpStatus;
 import org.drools.vertx.Constants;
 import org.drools.vertx.demo.cep.model.CrewArrivedEvent;
 import org.drools.vertx.demo.cep.model.FlightInfoEvent;
@@ -13,6 +13,8 @@ import org.drools.vertx.eventbus.EventBusAddressResolver;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
@@ -42,6 +44,10 @@ public class HttpRouterBuilder {
 		//Create the BodyHandler first!!!
 		router.route().handler(BodyHandler.create());
 		
+		//Flights
+		router.get("/flights").handler(this::handleGetFlights);
+		
+		
 		//FlightInfoEvent
 		router.post("/event/flightInfo").handler(this::handleFlightInfo);
 		
@@ -52,6 +58,49 @@ public class HttpRouterBuilder {
 		return router;
 	}
 	
+	
+	/*
+	 * Expected request.
+	 * 
+	 * TODO: enhance requests that we can provide.
+	 * 
+	 * {
+	 * 	 airline: 'KL',
+	 *   departureBefore: ''
+	 *   departureAfter: ''
+	 *   arrivalBefore: ''
+	 *   arrivalAfter: ''
+	 * }
+	 * 
+	 */
+	private void handleGetFlights(RoutingContext context) {
+		
+		JsonObject getFlightsRequest = new JsonObject();
+		
+		//Map request params.
+		String[] params = {"airline", "departBefore", "departAfter", "arriveBefore", "arriveAfter"};
+		
+		for (String nextParam: params) {
+			String value = context.request().getParam(nextParam);
+			if (value != null && !value.isEmpty()) { 
+				getFlightsRequest.put(nextParam , context.request().getParam(nextParam));
+			}
+		}
+		
+		eventBus.send(Constants.GET_FLIGHTS_EVENT_BUS_ADDRESS, getFlightsRequest, res -> {
+			if (res.succeeded()) {
+				JsonArray response = (JsonArray) res.result().body();
+				LOGGER.info("Response: " + response);
+				context.response().setStatusCode(HttpStatus.SC_OK);
+				context.response().setChunked(true);
+				context.response().write(response.toString());
+				context.response().end();
+			} else {
+				context.response().setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+				context.response().end();
+			}
+		});
+	}
 	
 	
 	/**
@@ -64,10 +113,24 @@ public class HttpRouterBuilder {
 		 * TODO: We can also simply send the JSON through the EventBus and have the consumer deal with unmarshalling.
 		 * That's probably a lot faster as well ...
 		 */
-		//Flight Events are always send to the generic FlightInfo EventBus. The consumer on that bus is responsible for routing it to the correct flight verticle.
+		//Flight Events are always send to the generic FlightInfo EventBus. The consumer on that bus (AirportVerticle) is responsible for routing it to the correct flight verticle.
 		FlightInfoEvent receivedFlightInfo = Json.decodeValue(context.getBody(), FlightInfoEvent.class);
-		eventBus.send(Constants.FLIGHT_INFO_EVENT_BUS_ADDRESS, receivedFlightInfo);
+		eventBus.<String>send(Constants.FLIGHT_INFO_EVENT_BUS_ADDRESS, receivedFlightInfo, res -> {
+			if (res.succeeded()) {
+				String response = res.result().body();
+				LOGGER.info("Response: " + response);
+				context.response().setStatusCode(HttpStatus.SC_ACCEPTED);
+				//Seems we need to set Chunked if we want to write a response.
+				context.response().setChunked(true);
+				context.response().write(response);
+				context.response().end();
+			} else {
+				context.response().setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+				context.response().end();
+			}
+		});
 		LOGGER.info("Message sent to EventBus!!!!");
+		
 	}
 	
 	private void handleLuggageScanEvent(RoutingContext context) {

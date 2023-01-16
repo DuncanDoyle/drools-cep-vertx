@@ -1,20 +1,22 @@
 package org.drools.vertx;
 
 
-import static io.vertx.core.logging.LoggerFactory.LOGGER_DELEGATE_FACTORY_CLASS_NAME;
+import static io.vertx.core.logging.LoggerFactory.*;
 
 import org.drools.vertx.codec.FlightInfoCodec;
 import org.drools.vertx.demo.cep.command.Command;
 import org.drools.vertx.demo.cep.command.CommandMessageCodec;
 import org.drools.vertx.demo.cep.model.FlightInfoEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
+//import io.vertx.core.logging.Logger;
+//import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.logging.SLF4JLogDelegateFactory;
 
 /**
@@ -25,12 +27,10 @@ import io.vertx.core.logging.SLF4JLogDelegateFactory;
  */
 public class MainVerticle extends AbstractVerticle {
 	
-	/*
 	static {
 		System.setProperty (LOGGER_DELEGATE_FACTORY_CLASS_NAME, SLF4JLogDelegateFactory.class.getName ());
 	    LoggerFactory.getLogger (LoggerFactory.class); // Required for Logback to work in Vertx
 	}
-	*/
 	
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class);

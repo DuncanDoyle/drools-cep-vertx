@@ -3,6 +3,7 @@ package org.drools.vertx.model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import org.drools.vertx.demo.cep.model.Flight;
 import org.drools.vertx.demo.cep.model.FlightInfoEvent;
 
 import io.vertx.core.json.Json;

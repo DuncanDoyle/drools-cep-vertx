@@ -23,7 +23,7 @@ public class KJarTest {
 			numberOfRules = numberOfRules + nextKiePackage.getRules().size();
 		}
 		
-		assertEquals(1, numberOfRules);
+		assertEquals(2, numberOfRules);
 	}
 }
 

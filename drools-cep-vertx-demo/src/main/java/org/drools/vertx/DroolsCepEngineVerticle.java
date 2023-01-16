@@ -2,16 +2,16 @@ package org.drools.vertx;
 
 import org.drools.vertx.demo.cep.model.SimpleEvent;
 import org.kie.api.KieServices;
-import org.kie.api.builder.ReleaseId;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.Json;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
+
 
 /**
  * Runs the Drools CEP Sessions as a Vert.X verticle.

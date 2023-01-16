@@ -1,12 +1,14 @@
 package org.drools.vertx;
 
 import org.drools.vertx.http.HttpRouterBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServer;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
+
+
 
 public class HttpVerticle extends AbstractVerticle {
 

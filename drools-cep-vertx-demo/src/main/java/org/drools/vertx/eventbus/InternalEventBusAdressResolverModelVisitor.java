@@ -26,12 +26,12 @@ class InternalEventBusAdressResolverModelVisitor implements ModelVisitor {
 
 	@Override
 	public void visit(CrewArrivedEvent event) {
-		address = Constants.CREW_ARRIVED_EVENT_EVENT_BUS_ADDRESS_PREFIX + Constants.getUniqueFlightId(event);
+		address = Constants.ABSTRACT_FLIGHT_EVENT_EVENT_BUS_ADDRESS_PREFIX + Constants.getUniqueFlightId(event);
 	}
 
 	@Override
 	public void visit(LuggageScanEvent event) {
-		address = Constants.LUGGAGE_SCAN_EVENT_EVENT_BUS_ADDRESS_PREFIX + Constants.getUniqueFlightId(event);
+		address = Constants.ABSTRACT_FLIGHT_EVENT_EVENT_BUS_ADDRESS_PREFIX + Constants.getUniqueFlightId(event);
 	}
 	
 
